@@ -1,12 +1,12 @@
 // ============================================================
 //  Discord Economy Bot  —  bot.js
 //  Features: currency, slots, daily rewards, jobs, admin cmds
-//  Runtime: Node 18+  |  DB: better-sqlite3  |  Deploy: Railway
+//  Runtime: Node 20 LTS  |  DB: better-sqlite3  |  Deploy: Railway
 // ============================================================
 
 require("dotenv").config();
 const { Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require("discord.js");
-const Database = require("better-sqlite3");
+const Database = require("@db-sqlite/better-sqlite3");
 const path = require("path");
 
 // ─── Config ──────────────────────────────────────────────────
@@ -111,7 +111,7 @@ function successEmbed(msg) {
 // ─── Jobs ─────────────────────────────────────────────────────
 const JOBS = {
   miner: {
-    label: "Miner",
+    label: "⛏️  Miner",
     description: "Dig for coal and gems deep underground.",
     cooldown: 3600,         // 1 hour
     pay: [80, 200],
@@ -122,7 +122,7 @@ const JOBS = {
     ],
   },
   chef: {
-    label: "Chef",
+    label: "👨‍🍳  Chef",
     description: "Cook mouth-watering dishes at the local bistro.",
     cooldown: 2700,         // 45 min
     pay: [60, 160],
@@ -133,7 +133,7 @@ const JOBS = {
     ],
   },
   programmer: {
-    label: "Programmer",
+    label: "💻  Programmer",
     description: "Write code for clients and fix gnarly bugs.",
     cooldown: 4800,         // 80 min
     pay: [120, 300],
@@ -144,7 +144,7 @@ const JOBS = {
     ],
   },
   fisherman: {
-    label: "Fisherman",
+    label: "🎣  Fisherman",
     description: "Cast your line and reel in the daily catch.",
     cooldown: 2400,         // 40 min
     pay: [40, 130],
@@ -155,7 +155,7 @@ const JOBS = {
     ],
   },
   merchant: {
-    label: "Merchant",
+    label: "🛒  Merchant",
     description: "Buy low, sell high at the bustling market.",
     cooldown: 3200,
     pay: [90, 250],
@@ -220,7 +220,7 @@ cmd(["balance", "bal", "wallet"], async (msg, args, user) => {
   const name   = target ? target.displayName : msg.author.displayName;
 
   return embed()
-    .setTitle(`${name}'s Wallet`)
+    .setTitle(`💰 ${name}'s Wallet`)
     .addFields(
       { name: "Cash",       value: formatCoins(data.balance), inline: true },
       { name: "Bank",       value: formatCoins(data.bank),    inline: true },
@@ -245,7 +245,7 @@ cmd("daily", async (msg, args, user) => {
   stmts.logTx.run(user.user_id, msg.guild.id, "daily", reward, "Daily reward");
 
   return embed(0xFEE75C)
-    .setTitle("Daily Reward")
+    .setTitle("🎁 Daily Reward")
     .setDescription(`You claimed your daily reward of ${formatCoins(reward)}!\nNew balance: ${formatCoins(user.balance + reward)}`);
 });
 
@@ -289,7 +289,7 @@ cmd("getjob", async (msg, args, user) => {
     }).join("\n\n");
 
     return embed()
-      .setTitle("Available Jobs")
+      .setTitle("💼 Available Jobs")
       .setDescription(list)
       .setFooter({ text: `Use: ${PREFIX}getjob <name>` });
   }
@@ -312,7 +312,7 @@ cmd("jobs", async (msg, args, user) => {
   }).join("\n\n");
 
   return embed()
-    .setTitle("Jobs Board")
+    .setTitle("💼 Jobs Board")
     .setDescription(list)
     .setFooter({ text: `Use: ${PREFIX}getjob <name> to switch jobs` });
 });
@@ -491,15 +491,15 @@ cmd(["profile", "stats"], async (msg, args, user) => {
     .setTitle(`📊 ${name}'s Profile`)
     .setThumbnail(avatar)
     .addFields(
-      { name: "Cash",         value: formatCoins(data.balance),             inline: true },
-      { name: "Bank",         value: formatCoins(data.bank),                inline: true },
-      { name: "Net Worth",    value: formatCoins(data.balance + data.bank), inline: true },
-      { name: "Job",          value: jobLabel,                              inline: true },
-      { name: "Total Earned", value: formatCoins(data.total_earned),        inline: true },
-      { name: "Total Spent",  value: formatCoins(data.total_spent),         inline: true },
-      { name: "Slot Wins",    value: String(data.spin_wins),                inline: true },
-      { name: "Slot Losses",  value: String(data.spin_losses),              inline: true },
-      { name: "Win Rate",     value: `${winRate}%`,                         inline: true },
+      { name: "💵 Cash",         value: formatCoins(data.balance),             inline: true },
+      { name: "🏦 Bank",         value: formatCoins(data.bank),                inline: true },
+      { name: "💎 Net Worth",    value: formatCoins(data.balance + data.bank), inline: true },
+      { name: "💼 Job",          value: jobLabel,                              inline: true },
+      { name: "📈 Total Earned", value: formatCoins(data.total_earned),        inline: true },
+      { name: "📉 Total Spent",  value: formatCoins(data.total_spent),         inline: true },
+      { name: "🎰 Slot Wins",    value: String(data.spin_wins),                inline: true },
+      { name: "💸 Slot Losses",  value: String(data.spin_losses),              inline: true },
+      { name: "📊 Win Rate",     value: `${winRate}%`,                         inline: true },
     );
 });
 
@@ -508,10 +508,10 @@ cmd("help", async (msg) => {
   const isAdmin = msg.member?.permissions.has("Administrator") || msg.author.id === OWNER;
 
   return embed()
-    .setTitle("Economy Bot Commands")
+    .setTitle("📖 Economy Bot Commands")
     .addFields(
       {
-        name: "Economy",
+        name: "💰 Economy",
         value: [
           `\`${PREFIX}balance [@user]\` — View wallet`,
           `\`${PREFIX}deposit <amt|all>\` — Move cash → bank`,
@@ -522,7 +522,7 @@ cmd("help", async (msg) => {
         ].join("\n"),
       },
       {
-        name: "Earn",
+        name: "🎯 Earn",
         value: [
           `\`${PREFIX}daily\` — Claim daily reward (24h cooldown)`,
           `\`${PREFIX}jobs\` — List all available jobs`,
@@ -531,14 +531,14 @@ cmd("help", async (msg) => {
         ].join("\n"),
       },
       {
-        name: "Gambling",
+        name: "🎰 Gambling",
         value: [
           `\`${PREFIX}spin <amt|all|half>\` — Spin the slot machine`,
           `\`${PREFIX}spininfo\` — View payout table`,
         ].join("\n"),
       },
       isAdmin ? {
-        name: "Admin",
+        name: "🛡️ Admin",
         value: [
           `\`${PREFIX}addmoney @user <amt>\` — Give coins`,
           `\`${PREFIX}removemoney @user <amt>\` — Take coins`,
@@ -636,12 +636,12 @@ cmd("serverinfo", async (msg) => {
   const richest     = db.prepare("SELECT username, balance+bank as net FROM users WHERE guild_id=? ORDER BY net DESC LIMIT 1").get(msg.guild.id);
 
   return embed(0x5865F2)
-    .setTitle(`Server Economy Stats — ${msg.guild.name}`)
+    .setTitle(`🖥️ Server Economy Stats — ${msg.guild.name}`)
     .addFields(
-      { name: "Registered Users",    value: String(totalUsers),         inline: true },
-      { name: "Total Transactions",  value: String(totalTx),            inline: true },
-      { name: "Total Coins in Circ.", value: formatCoins(totalCoins),   inline: true },
-      { name: "Richest User",        value: richest ? `${richest.username} — ${formatCoins(richest.net)}` : "None", inline: false },
+      { name: "👥 Registered Users",    value: String(totalUsers),         inline: true },
+      { name: "📋 Total Transactions",  value: String(totalTx),            inline: true },
+      { name: "🪙 Total Coins in Circ.", value: formatCoins(totalCoins),   inline: true },
+      { name: "👑 Richest User",        value: richest ? `${richest.username} — ${formatCoins(richest.net)}` : "None", inline: false },
     );
 });
 
